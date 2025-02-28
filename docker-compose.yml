@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Node.js/Express.js Application
+  app:
+    build: .
+    container_name: task-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/taskmanager
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  # MongoDB Database
+  mongo:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  # Redis for BullMQ
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+# Volumes for persistent data storage
+volumes:
+  mongo-data:
+  redis-data:

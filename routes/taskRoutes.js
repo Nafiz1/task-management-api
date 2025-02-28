@@ -1,5 +1,13 @@
 const express = require('express');
 const Task = require('../models/Task');
+const { Queue } = require('bullmq');
+
+const taskQueue = new Queue('taskQueue', {
+  connection: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+  },
+});
 
 const router = express.Router();
 
@@ -8,6 +16,13 @@ router.post('/', async (req, res) => {
   try {
     const task = new Task(req.body);
     await task.save();
+
+    // Add job to the queue
+    await taskQueue.add('updateTaskStatus', {
+      taskId: task._id,
+      status: 'In Progress',
+    });
+
     res.status(201).json(task);
   } catch (error) {
     res.status(400).json({ message: error.message });
