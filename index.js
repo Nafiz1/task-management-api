@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// Import task routes
 const taskRoutes = require('./routes/taskRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const port = 3000;
@@ -33,10 +33,12 @@ app.get('/', (req, res) => {
   res.send('Task Management API');
 });
 
-// Use task routes
+// Routes
 app.use('/tasks', taskRoutes);
+app.use('/auth', authRoutes);
 
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
+
