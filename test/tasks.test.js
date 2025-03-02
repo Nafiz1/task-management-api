@@ -1,8 +1,7 @@
-// test/tasks.test.js
-
 require('dotenv').config({ path: '.env.test' });
 const request = require('supertest');
 const mongoose = require('mongoose');
+const { Queue } = require('bullmq');
 const app = require('../app');
 const User = require('../models/User');
 const Task = require('../models/Task');
@@ -10,17 +9,30 @@ const Task = require('../models/Task');
 describe('Task Routes', () => {
   let token = '';
   let createdTaskId = '';
+  let taskQueue;
 
   beforeAll(async () => {
+    // Connect to MongoDB
     if (!mongoose.connection.readyState) {
       await mongoose.connect(process.env.MONGO_URI);
     }
+
+    // Initialize BullMQ queue
+    taskQueue = new Queue('taskQueue', {
+      connection: {
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+      },
+    });
   });
 
   beforeEach(async () => {
     // Clear users and tasks before each test
     await User.deleteMany({});
     await Task.deleteMany({});
+
+    // Clear the Redis queue
+    await taskQueue.obliterate({ force: true });
 
     // Register & login a user to get a fresh token
     await request(app)
@@ -35,7 +47,11 @@ describe('Task Routes', () => {
   });
 
   afterAll(async () => {
+    // Close MongoDB connection
     await mongoose.connection.close();
+
+    // Close BullMQ queue
+    await taskQueue.close();
   });
 
   it('should create a new task', async () => {
