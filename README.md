@@ -229,6 +229,119 @@ Success Response (200):
   }
 ]
 ```
+#### Get a Single Task
+
+**GET /tasks/:id**
+
+Request Header:
+```text
+Authorization: Bearer <jwt-token>
+```
+
+Success Response (200):
+```json
+{
+  "_id": "64f945eb...",
+  "title": "My Task",
+  "description": "Desc",
+  "status": "Pending",
+  "user": "64f945aa...",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+```
+
+Error Response (404):
+```json
+{
+  "message": "Task not found"
+}
+```
+
+Error Response (500):
+```json
+{
+  "message": "Internal server error"
+}
+```
+
+---
+
+#### Update a Task
+
+**PUT /tasks/:id**
+
+Request Header:
+```text
+Authorization: Bearer <jwt-token>
+```
+
+Request Body:
+```json
+{
+  "title": "Updated Task Title",
+  "description": "New details"
+}
+```
+
+Success Response (200):
+```json
+{
+  "_id": "64f945eb...",
+  "title": "Updated Task Title",
+  "description": "New details",
+  "status": "Pending",
+  "user": "64f945aa...",
+  "createdAt": "...",
+  "updatedAt": "..."
+}
+```
+
+Error Response (404):
+```json
+{
+  "message": "Task not found"
+}
+```
+
+Error Response (400):
+```json
+{
+  "message": "Validation error"
+}
+```
+
+---
+
+#### Delete a Task
+
+**DELETE /tasks/:id**
+
+Request Header:
+```text
+Authorization: Bearer <jwt-token>
+```
+
+Success Response (200):
+```json
+{
+  "message": "Task deleted successfully"
+}
+```
+
+Error Response (404):
+```json
+{
+  "message": "Task not found"
+}
+```
+
+Error Response (500):
+```json
+{
+  "message": "Internal server error"
+}
+```
 
 ---
 
